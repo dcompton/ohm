@@ -1467,7 +1467,7 @@ module Ohm
     def save
       return create if new?
       return unless valid?
-
+      return unless key.exists
       mutex do
         write
         update_indices
