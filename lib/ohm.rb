@@ -1977,11 +1977,11 @@ module Ohm
     #
     # @see Model#mutex
     def lock!
-      until key[:_lock].setnx(@timestamp = Time.now.to_f + 0.5)
+      until key[:_lock].setnx(@timestamp = Time.now.to_f + 2.0)
         next unless timestamp = key[:_lock].get
         sleep(0.1) and next unless lock_expired?(timestamp)
 
-        break unless timestamp = key[:_lock].getset(@timestamp = Time.now.to_f + 0.5)
+        break unless timestamp = key[:_lock].getset(@timestamp = Time.now.to_f + 2.0)
         break if lock_expired?(timestamp)
       end
     end
