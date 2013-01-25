@@ -1730,7 +1730,6 @@ module Ohm
   protected
     attr_writer :id
 
-
     # Write all the attributes and counters of this object. The operation
     # is actually a 2-step process:
     #
@@ -1978,11 +1977,11 @@ module Ohm
     #
     # @see Model#mutex
     def lock!
-      until key[:_lock].setnx(Time.now.to_f + 0.5)
+      until key[:_lock].setnx(@timestamp = Time.now.to_f + 0.5)
         next unless timestamp = key[:_lock].get
         sleep(0.1) and next unless lock_expired?(timestamp)
 
-        break unless timestamp = key[:_lock].getset(Time.now.to_f + 0.5)
+        break unless timestamp = key[:_lock].getset(@timestamp = Time.now.to_f + 0.5)
         break if lock_expired?(timestamp)
       end
     end
@@ -1990,7 +1989,10 @@ module Ohm
     # Release the lock.
     # @see Model#mutex
     def unlock!
-      key[:_lock].del
+      timestamp = key[:_lock].getset(Time.now.to_f + 0.5)
+      if @timestamp.to_s == timestamp
+        key[:_lock].del
+      end
     end
 
     def lock_expired?(timestamp)
