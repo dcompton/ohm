@@ -1989,7 +1989,7 @@ module Ohm
     # Release the lock.
     # @see Model#mutex
     def unlock!
-      timestamp = key[:_lock].getset(Time.now.to_f + 0.5)
+      timestamp = key[:_lock].getset(Time.now.to_f + 2.0)
       if @timestamp.to_s == timestamp
         key[:_lock].del
       end
